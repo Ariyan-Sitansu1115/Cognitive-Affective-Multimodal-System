@@ -1,0 +1,1 @@
+This package contains the organized frozen baseline evaluation stages. The original Colab-exported script remains the authoritative source/reference. Modules expose utilities only; importing them does not train models or write checkpoints.
