@@ -135,17 +135,19 @@ def main() -> None:
         "confusion_matrix": matrix.tolist(),
     }
     prediction_rows = []
-    for record, true_index, predicted_index, row_confidence, row_entropy, row_normalized in zip(
-        splits["test"], targets, predicted, confidence, uncertainty, normalized
+    for record, true_index, predicted_index, row_confidence, row_entropy, row_normalized, row_probabilities in zip(
+        splits["test"], targets, predicted, confidence, uncertainty, normalized, probabilities
     ):
-        prediction_rows.append({
+        row = {
             "image_path": record.path.relative_to(ROOT).as_posix(),
             "true_label": class_names[int(true_index)],
             "predicted_label": class_names[int(predicted_index)],
             "confidence": float(row_confidence),
             "entropy_uncertainty": float(row_entropy),
             "normalized_uncertainty": float(row_normalized),
-        })
+        }
+        row.update({f"probability_{name.lower()}": float(row_probabilities[index]) for index, name in enumerate(class_names)})
+        prediction_rows.append(row)
     pd.DataFrame(prediction_rows).to_csv(PREDICTIONS_PATH, index=False)
     METRICS_PATH.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     uncertainty_summary = {
